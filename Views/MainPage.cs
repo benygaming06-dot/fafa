@@ -13,8 +13,7 @@ public class MainPage : ContentPage
     {
         Title = "Kurt Dhylan Moto Shop";
         BackgroundColor = Ui.Dark;
-        NavigationPage.SetBarBackgroundColor(this, Ui.Dark);
-        NavigationPage.SetBarTextColor(this, Colors.White);
+      
 
         var logo = new Image { Source = "appicon.svg", HeightRequest = 110, WidthRequest = 110, HorizontalOptions = LayoutOptions.Center };
         var shop = Ui.Title("KURT DHYLAN", 30); shop.HorizontalOptions = LayoutOptions.Center;
