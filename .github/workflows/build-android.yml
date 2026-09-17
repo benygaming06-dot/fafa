@@ -1,0 +1,55 @@
+name: Build Kurt Dhylan Moto Shop Inventory APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install MAUI Android workload
+        run: dotnet workload install maui-android
+
+      - name: Restore
+        run: dotnet restore KurtDhylanMotoShopInventory.csproj
+
+      # IMPORTANT: do not pass -r linux-x64 here.
+      # Android uses an Android runtime/ABI, not the Linux desktop RID.
+      - name: Publish Android APK
+        run: >-
+          dotnet publish KurtDhylanMotoShopInventory.csproj
+          -f net10.0-android
+          -c Debug
+          -p:AndroidPackageFormat=apk
+          -p:AndroidUseSharedRuntime=false
+          -o ./publish
+
+      - name: Find APK
+        id: apk
+        shell: bash
+        run: |
+          APK=$(find ./publish -type f -name '*.apk' | head -n 1)
+          if [ -z "$APK" ]; then
+            echo "No APK found"
+            find ./publish -maxdepth 4 -type f -print
+            exit 1
+          fi
+          echo "path=$APK" >> "$GITHUB_OUTPUT"
+          echo "APK: $APK"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KurtDhylanMotoShopInventory-APK
+          path: ${{ steps.apk.outputs.path }}
+          if-no-files-found: error
