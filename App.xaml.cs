@@ -1,3 +1,5 @@
+using KurtDhylanMotoShopInventory.Views;
+
 namespace KurtDhylanMotoShopInventory;
 
 public partial class App : Application
